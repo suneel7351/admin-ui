@@ -10,7 +10,6 @@ function LoginPage() {
   const { isAllowed } = usePermission()
   const { setUser, logout } = useAuthStore()
   const loginUser = async (credentials: credentials) => {
-    console.log(credentials);
     const { data } = await login(credentials)
     return data
 
