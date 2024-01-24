@@ -23,30 +23,50 @@ function Dashboard() {
     })
 
 
-  
-    const items = [
-        {
-            key: "/",
-            icon: <HomeOutlined />,
-            label: <NavLink to={"/"}>Home</NavLink>
-        },
-        {
-            key: "/users",
-            icon: <UserOutlined />,
-            label: <NavLink to={"/users"}>Users</NavLink>
-        },
-        {
-            key: "/kjfs",
-            icon: <RestOutlined />,
-            label: <NavLink to={"/kjl"}>Rest</NavLink>
+
+    function allowMenu(role: string) {
+        const items = [
+            {
+                key: "/",
+                icon: <HomeOutlined />,
+                label: <NavLink to={"/"}>Home</NavLink>
+            },
+            {
+                key: "/kjfs",
+                icon: <RestOutlined />,
+                label: <NavLink to={"/kjl"}>Rest</NavLink>
+            }
+        ]
+
+
+        if (role === "admin") {
+            const menus = [...items]
+
+            menus.splice(1, 0, {
+                key: "/users",
+                icon: <UserOutlined />,
+                label: <NavLink to={"/users"}>Users</NavLink>
+            }, {
+                key: "/tenants",
+                icon: <UserOutlined />,
+                label: <NavLink to={"/tenants"}>Restuarant</NavLink>
+            })
+
+            return menus
         }
-    ]
+
+        return items
+    }
+
+
+
 
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
     if (user === null) return <Navigate replace={true} to={"/auth/login"} />
+    const items = allowMenu(user?.role)
     return (
         <div>
             <Layout style={{ minHeight: '100vh' }}>
@@ -79,7 +99,7 @@ function Dashboard() {
                         </Flex>
 
                     </Header>
-                    <Content style={{ margin: '0 16px' }}>
+                    <Content style={{ margin: '22px' }}>
 
                         <Outlet />
                     </Content>
