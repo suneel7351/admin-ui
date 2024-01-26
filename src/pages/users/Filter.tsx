@@ -1,10 +1,9 @@
-import {  Card, Col, Input, Row, Select, } from 'antd'
+import { Card, Col, Form, Input, Row, Select, } from 'antd'
 import React from 'react'
 interface UserFilterProp {
-  onFilterChange: (queryName:string,queryValue:string) => void
-  children:React.ReactNode
+  children: React.ReactNode
 }
-function Filter({onFilterChange,children}:UserFilterProp) {
+function Filter({ children }: UserFilterProp) {
   return (
     <Card >
 
@@ -15,26 +14,30 @@ function Filter({onFilterChange,children}:UserFilterProp) {
 
           <Row gutter={20}>
             <Col span={8}>
-              <Input.Search style={{ width: "100%" }} allowClear={true} placeholder='Search Name'  onChange={(e)=>onFilterChange("searchQuery",e.target.value)}/>
+              <Form.Item name={"q"}>
+                <Input.Search style={{ width: "100%" }} allowClear={true} placeholder='Search Name'  />
+              </Form.Item>
             </Col>
             <Col span={8}>
-              <Select style={{ width: "100%" }} placeholder="select role" allowClear={true} onChange={(selectedItem)=>onFilterChange("roleQuery",selectedItem)}>
-                <Select.Option>Admin</Select.Option>
-                <Select.Option>Manager</Select.Option>
-                <Select.Option>Customer</Select.Option>
+            <Form.Item name={"role"}> 
+            <Select  style={{ width: "100%" }} placeholder="select role" allowClear={true} >
+                <Select.Option key={"admin"}>Admin</Select.Option>
+                <Select.Option key={"manager"}>Manager</Select.Option>
+                <Select.Option key={"customer"}>Customer</Select.Option>
               </Select>
+            </Form.Item>
             </Col>
-            <Col span={8}>
+            {/* <Col span={8}>
               <Select style={{ width: "100%" }} placeholder="select status" allowClear={true} onChange={(selectedItem)=>onFilterChange("statusQuery",selectedItem)}>
                 <Select.Option>Active</Select.Option>
                 <Select.Option>Ban</Select.Option>
               </Select>
-            </Col>
+            </Col> */}
           </Row>
         </Col>
         <Col span={8} style={{ display: "flex", justifyContent: "end" }}>
           {children}
-        
+
         </Col>
 
       </Row>

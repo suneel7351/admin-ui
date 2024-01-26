@@ -7,7 +7,7 @@ import Filter from './Filter'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import UserForm from './forms/UserForm'
-import { UserData } from '../../types'
+import { FieldData, UserData } from '../../types'
 import { PER_PAGE } from '../../constant'
 
 function Users() {
@@ -19,16 +19,18 @@ function Users() {
     token: { colorBgLayout },
   } = theme.useToken();
   const [form] = Form.useForm()
+  const [SearchForm] = Form.useForm()
   const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
   const { user } = useAuthStore()
   const { data: users, error, isFetching } = useQuery({
     queryKey: ['users', queryParams],
     queryFn: async () => {
-      const queryString = new URLSearchParams(queryParams as unknown as Record<string, string>).toString()
+      const filterQueryParams = Object.fromEntries(Object.entries(queryParams).filter((item) => !!item[1]))
+      const queryString = new URLSearchParams(filterQueryParams as unknown as Record<string, string>).toString()
       return getUsers(queryString).then((res) => res.data)
     },
-    placeholderData:keepPreviousData
+    placeholderData: keepPreviousData
   })
 
   const createUserData = async (userData: UserData) => {
@@ -75,6 +77,17 @@ function Users() {
     setIsOpen(false)
   }
 
+
+  const onSearchHandler = (changeFields: FieldData[]) => {
+    const arr = changeFields.map((item) => {
+      return { [item.name[0]]: item.value }
+    }).reduce((acc, item) => {
+      return { ...acc, ...item }
+    }, {})
+    setQueryParams((prev) => ({ ...prev, ...arr }))
+  }
+
+
   if (user?.role !== "admin") return <Navigate to={"/"} replace={true} />
   return (
     <>
@@ -94,12 +107,11 @@ function Users() {
           }
         </Flex>
 
-        <Filter onFilterChange={(name: string, value: string) => {
-          console.log(name, value);
-
-        }} >
-          <Button onClick={() => setIsOpen(true)} type='primary' icon={<PlusOutlined />}>Add User</Button>
-        </Filter>
+        <Form form={SearchForm} onFieldsChange={onSearchHandler}>
+          <Filter  >
+            <Button onClick={() => setIsOpen(true)} type='primary' icon={<PlusOutlined />}>Add User</Button>
+          </Filter>
+        </Form>
         <Table
           pagination={{
             total: users?.total,
