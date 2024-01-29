@@ -5,11 +5,11 @@ import { createUser, getUsers } from '../../http/api'
 import { useAuthStore } from '../../store'
 import Filter from './Filter'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import UserForm from './forms/UserForm'
 import { FieldData, UserData } from '../../types'
 import { PER_PAGE } from '../../constant'
-
+import {debounce} from 'lodash'
 function Users() {
   const [queryParams, setQueryParams] = useState({
     skip: PER_PAGE,
@@ -78,13 +78,29 @@ function Users() {
   }
 
 
+  const debouncing = useMemo(() => {
+    return debounce((value: string | unknown | undefined) => {
+      setQueryParams((prev) => ({ ...prev, q: value }))
+    }, 1000)
+  }, [])
+
+
   const onSearchHandler = (changeFields: FieldData[]) => {
     const arr = changeFields.map((item) => {
       return { [item.name[0]]: item.value }
     }).reduce((acc, item) => {
       return { ...acc, ...item }
     }, {})
-    setQueryParams((prev) => ({ ...prev, ...arr }))
+
+
+    if ('q' in arr) {
+      
+      debouncing(arr.q)
+    } else {
+
+      setQueryParams((prev) => ({ ...prev, ...arr }))
+    }
+
   }
 
 
